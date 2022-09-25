@@ -1,6 +1,6 @@
 resource "aws_codebuild_project" "webapp" {
-  badge_enabled = false
-  build_timeout = 60
+  badge_enabled      = false
+  build_timeout      = 60
   name               = "webapp"
   project_visibility = "PRIVATE"
   queued_timeout     = 480
@@ -26,6 +26,33 @@ resource "aws_codebuild_project" "webapp" {
   }
 
   environment {
+
+
+    environment_variable {
+      name  = "REACT_APP_AUTH0_DOMAIN"
+      type  = "PLAINTEXT"
+      value = "subtubes-dev.auth0.com"
+    }
+    environment_variable {
+      name  = "REACT_APP_AUTH0_CLIENT_ID"
+      type  = "SECRETS_MANAGER"
+      value = "prod/webapp-subtubes-io/REACT_APP_AUTH0_CLIENT_ID"
+    }
+    environment_variable {
+      name  = "REACT_APP_AUTH0_CALLBACK_URL"
+      type  = "PLAINTEXT"
+      value = "http://localhost:4040/callback"
+    }
+    environment_variable {
+      name  = "REACT_APP_API_SERVER_URL"
+      type  = "PLAINTEXT"
+      value = "http://localhost:6060"
+    }
+    environment_variable {
+      name  = "REACT_APP_AUTH0_AUDIENCE"
+      type  = "PLAINTEXT"
+      value = "https://backend.subtubes.io"
+    }
 
     compute_type                = "BUILD_GENERAL1_SMALL"
     image                       = "aws/codebuild/standard:6.0"
@@ -97,10 +124,13 @@ resource "aws_iam_role" "code_build" {
 
   force_detach_policies = false
 
-  managed_policy_arns   = []
-  max_session_duration  = 3600
-  name                  = "webapp-subtubes-codebuild"
-  path                  = "/service-role/"
+  managed_policy_arns = [
+    "arn:aws:iam::568949616117:policy/service-role/CodeBuildBasePolicy-webapp-us-west-2",
+    "arn:aws:iam::568949616117:policy/service-role/CodeBuildSecretsManagerPolicy-webapp-us-west-2",
+  ]
+  max_session_duration = 3600
+  name                 = "webapp-subtubes-codebuild"
+  path                 = "/service-role/"
   tags = {
     "STAGE" = "prod"
   }
@@ -108,12 +138,21 @@ resource "aws_iam_role" "code_build" {
     "STAGE" = "prod"
   }
 
-
   inline_policy {
     name = "root"
     policy = jsonencode(
       {
         Statement = [
+          {
+            Action = [
+              "secretsmanager:GetSecretValue"
+            ]
+            Effect = "Allow"
+            Resource = [
+              #"arn:aws:secretsmanager:us-west-2:568949616117:secret:prod/webapp-subtubes-io/REACT_APP_AUTH0_CLIENT_ID-EjQO52"
+              "arn:aws:secretsmanager:us-west-2:568949616117:secret:prod/webapp-subtubes-io/*"
+            ]
+          },
           {
             Action = [
               "s3:GetObject",
@@ -123,7 +162,7 @@ resource "aws_iam_role" "code_build" {
             ]
             Effect = "Allow"
             Resource = [
-                aws_s3_bucket.artifacts.arn,
+              aws_s3_bucket.artifacts.arn,
               "${aws_s3_bucket.artifacts.arn}/*",
             ]
           },
