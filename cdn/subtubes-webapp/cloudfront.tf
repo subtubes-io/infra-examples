@@ -106,10 +106,10 @@ resource "aws_cloudfront_distribution" "cdn_bucket" {
   price_class      = "PriceClass_100"
   retain_on_delete = false
   tags = {
-    "STAGE" = "dev"
+    "STAGE" = "prod"
   }
   tags_all = {
-    "STAGE" = "dev"
+    "STAGE" = "prod"
   }
 
   default_root_object = "index.html"

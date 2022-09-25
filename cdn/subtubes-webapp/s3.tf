@@ -4,7 +4,7 @@ resource "aws_s3_bucket" "cdn_bucket" {
   object_lock_enabled = false
 
   tags = {
-    "STAGE" = "dev"
+    "STAGE" = "prod"
   }
 }
 
