@@ -4,7 +4,9 @@ resource "aws_cloudfront_distribution" "cdn_bucket" {
     aws_cloudfront_origin_access_control.cdn_bucket
   ]
   enabled = true
-
+  aliases = [
+    "beta.subtubes.io"
+  ]
   origin {
     domain_name         = aws_s3_bucket.cdn_bucket.bucket_regional_domain_name
     connection_attempts = 3
@@ -99,8 +101,13 @@ resource "aws_cloudfront_distribution" "cdn_bucket" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
-    minimum_protocol_version       = "TLSv1"
+    # cloudfront_default_certificate = true
+    # minimum_protocol_version       = "TLSv1"
+
+    acm_certificate_arn            = aws_acm_certificate.cert.arn
+    cloudfront_default_certificate = false
+    minimum_protocol_version       = "TLSv1.2_2021"
+    ssl_support_method             = "sni-only"
   }
 
   price_class      = "PriceClass_100"
