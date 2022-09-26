@@ -68,20 +68,73 @@ resource "aws_iam_role_policy" "code_source" {
           "codecommit:GetBranch",
           "codecommit:GetCommit",
           "codecommit:UploadArchive",
-          "codecommit:GetUploadArchiveStatus"
+          "codecommit:GetUploadArchiveStatus",
+
         ]
         Effect   = "Allow"
         Resource = "arn:aws:codecommit:us-west-2:568949616117:simplehttp"
       },
-
+      {
+        Action = [
+          "codedeploy:GetApplication",
+          "codedeploy:GetApplicationRevision",
+          "codedeploy:RegisterApplicationRevision"
+        ]
+        Effect   = "Allow"
+        Resource = ["arn:aws:codedeploy:us-west-2:568949616117:application:AppECS-ec2-demo-simple-http-blue-green"]
+      },
+      {
+        Action = [
+          "codedeploy:CreateDeployment",
+          "codedeploy:GetDeployment"
+        ]
+        Effect   = "Allow"
+        Resource = ["arn:aws:codedeploy:us-west-2:568949616117:deploymentgroup:AppECS-ec2-demo-simple-http-blue-green/ec2-demo-simple-http-blue-green"]
+      },
+      {
+        Action = [
+          "codedeploy:GetDeploymentConfig"
+        ]
+        Effect   = "Allow"
+        Resource = ["arn:aws:codedeploy:us-west-2:568949616117:deploymentconfig:custom.10percent.5minutes.canary"]
+      },
       {
         Action = [
           "s3:*"
         ]
-        Effect   = "Allow"
+        Effect = "Allow"
         Resource = [
-            "arn:aws:s3:::codepipeline-us-west-2-660918935926",
-            "arn:aws:s3:::codepipeline-us-west-2-660918935926/*"
+          "arn:aws:s3:::codepipeline-us-west-2-660918935926",
+          "arn:aws:s3:::codepipeline-us-west-2-660918935926/*"
+        ]
+      },
+      {
+        Action = [
+          "ecs:RegisterTaskDefinition"
+        ]
+        Effect = "Allow"
+        Resource = [
+          "*"
+        ]
+      },
+      {
+        Action = [
+          "codebuild:StartBuild",
+          "codebuild:BatchGetBuilds"
+        ]
+        Effect = "Allow"
+        Resource = [
+          "arn:aws:codebuild:us-west-2:568949616117:project/SimpleHttpCodeBuildV2"
+        ]
+      },
+      {
+        Action = [
+          "iam:PassRole"
+        ]
+        Effect = "Allow"
+        Resource = [
+          "arn:aws:iam::568949616117:role/simple-http-task",
+          "arn:aws:iam::568949616117:role/ecsTaskExecutionRole"
         ]
       },
     ]
@@ -173,37 +226,37 @@ resource "aws_iam_role_policy" "code_source" {
 
 # }
 
-# resource "aws_iam_role" "six" {
+resource "aws_iam_role" "six" {
 
-#   assume_role_policy = jsonencode(
-#     {
-#       Statement = [
-#         {
-#           Action = "sts:AssumeRole"
-#           Effect = "Allow"
-#           Principal = {
-#             Service = "ecs-tasks.amazonaws.com"
-#           }
-#           Sid = ""
-#         },
-#       ]
-#       Version = "2012-10-17"
-#     }
-#   )
+  assume_role_policy = jsonencode(
+    {
+      Statement = [
+        {
+          Action = "sts:AssumeRole"
+          Effect = "Allow"
+          Principal = {
+            Service = "ecs-tasks.amazonaws.com"
+          }
+          Sid = ""
+        },
+      ]
+      Version = "2012-10-17"
+    }
+  )
 
-#   description           = "Allows ECS tasks to call AWS services on your behalf."
-#   force_detach_policies = false
+  description           = "Allows ECS tasks to call AWS services on your behalf."
+  force_detach_policies = false
 
-#   managed_policy_arns = [
-#     "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
-#   ]
-#   max_session_duration = 3600
-#   name                 = "simple-http-task"
-#   path                 = "/"
-#   tags                 = {}
-#   tags_all             = {}
+  managed_policy_arns = [
+    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+  ]
+  max_session_duration = 3600
+  name                 = "simple-http-task"
+  path                 = "/"
+  tags                 = {}
+  tags_all             = {}
 
-# }
+}
 resource "aws_iam_role" "seven" {
 
   assume_role_policy = jsonencode(
@@ -232,5 +285,40 @@ resource "aws_iam_role" "seven" {
   path                 = "/"
   tags                 = {}
   tags_all             = {}
+
+}
+
+
+
+
+resource "aws_iam_role_policy" "code_build" {
+  name = "code_build"
+  role = aws_iam_role.seven.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Effect = "Allow"
+        Resource = [
+          "arn:aws:logs:us-west-2:568949616117:log-group:simple-http-v2:log-stream:*",
+        ]
+      },
+      {
+        Action = [
+          "s3:*"
+        ]
+        Effect = "Allow"
+        Resource = [
+          "arn:aws:s3:::codepipeline-us-west-2-660918935926",
+          "arn:aws:s3:::codepipeline-us-west-2-660918935926/*"
+        ]
+      },
+    ]
+  })
 
 }
