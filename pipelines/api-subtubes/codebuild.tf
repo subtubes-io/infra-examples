@@ -42,11 +42,11 @@ resource "aws_codebuild_project" "api" {
                   - echo Logging in to Amazon ECR...
                   - aws --version
                   - echo $AWS_DEFAULT_REGION
-                  - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+                  - aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 568949616117.dkr.ecr.us-west-2.amazonaws.com
                   - IMAGE_REPO_NAME=subtubes-api
                   - REPOSITORY_URI=568949616117.dkr.ecr.us-west-2.amazonaws.com/$IMAGE_REPO_NAME
                   - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-                  - IMAGE_TAG=(echo $CODEBUILD_BUILD_ID | awk -F ":" '{print $2}')
+                  - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F ":" '{print $2}')
                   - echo List directory files...
                   - ls
                   - echo Installing source NPM dependencies...
@@ -96,8 +96,7 @@ resource "aws_iam_role" "code_build" {
   force_detach_policies = false
 
   managed_policy_arns = [
-    "arn:aws:iam::568949616117:policy/service-role/CodeBuildBasePolicy-webapp-us-west-2",
-    "arn:aws:iam::568949616117:policy/service-role/CodeBuildSecretsManagerPolicy-webapp-us-west-2",
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
   ]
   max_session_duration = 3600
   name                 = "api-subtubes-codebuild"
@@ -114,7 +113,6 @@ resource "aws_iam_role" "code_build" {
     policy = jsonencode(
       {
         Statement = [
-
           {
             Action = [
               "s3:GetObject",
