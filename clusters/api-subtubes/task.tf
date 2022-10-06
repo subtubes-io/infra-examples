@@ -29,7 +29,7 @@ resource "aws_ecs_task_definition" "api_subtubes" {
     ]
   )
   cpu                = "256"
-  execution_role_arn = "arn:aws:iam::568949616117:role/ecsTaskExecutionRole"
+  execution_role_arn = aws_iam_role.task_execution.arn
   family             = "api-subtubes"
 
   memory             = "512"
