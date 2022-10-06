@@ -40,7 +40,7 @@ resource "aws_ecs_task_definition" "api_subtubes" {
   
   tags          = {}
   tags_all      = {}
-  task_role_arn = "arn:aws:iam::568949616117:role/api-subtubes-task-role"
+  task_role_arn = aws_iam_role.task_role.arn
 
   runtime_platform {
     operating_system_family = "LINUX"
