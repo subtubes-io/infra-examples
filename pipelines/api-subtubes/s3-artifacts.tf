@@ -1,7 +1,7 @@
 resource "aws_s3_bucket" "artifacts" {
-
-  bucket = "codepipeline-us-west-2-660918935926"
-  hosted_zone_id = "Z3BJ6K6RIION7M"
+  #bucket = "codepipeline-us-west-2-660918935926"
+  bucket = "subtubes-io-api-code-pipeline-artifacts"
+#  hosted_zone_id = "Z3BJ6K6RIION7M"
   object_lock_enabled = false
 
   #   request_payer       = "BucketOwner"

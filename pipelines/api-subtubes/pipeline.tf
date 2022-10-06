@@ -1,98 +1,155 @@
-resource "aws_codestarconnections_connection" "webapp" {
-  name          = "api-subtubes"
+
+resource "aws_codestarconnections_connection" "api" {
+  name          = "api-subtubes-backend"
   provider_type = "GitHub"
 }
 
 
 resource "aws_codepipeline" "api" {
+  name     = "api-subtubes-pipeline"
+  role_arn = aws_iam_role.code_pipeline.arn
+  tags = {
+    "STAGE" = "prod"
+  }
+  tags_all = {
+    "STAGE" = "prod"
+  }
 
-    name     = "simple-http-blue-greeen"
-    role_arn = "arn:aws:iam::568949616117:role/service-role/AWSCodePipelineServiceRole-us-west-2-simplehttp-pipeline"
-    tags     = {}
-    tags_all = {}
+  artifact_store {
+    location = aws_s3_bucket.artifacts.id
+    type     = "S3"
+  }
 
-    artifact_store {
-        location = "codepipeline-us-west-2-660918935926"
-        type     = "S3"
+  stage {
+    name = "Source"
+    action {
+      configuration = {
+        ConnectionArn    = aws_codestarconnections_connection.api.arn
+        FullRepositoryId = "subtubes-io/subtubes-backend"
+        BranchName       = "master"
+      }
+      input_artifacts = []
+
+      output_artifacts = [
+        "api-subtubes-prod-project",
+      ]
+
+      run_order = 1
+      version   = "1"
+
+      name     = "Source"
+      category = "Source"
+      owner    = "AWS"
+      provider = "CodeStarSourceConnection"
+
     }
+  }
+  stage {
+    name = "Build"
 
-    stage {
-        name = "Source"
-
-        action {
-            category         = "Source"
-            configuration    = {
-                "BranchName"           = "master"
-                "OutputArtifactFormat" = "CODE_ZIP"
-                "PollForSourceChanges" = "false"
-                "RepositoryName"       = "simplehttp"
-            }
-            input_artifacts  = []
-            name             = "Source"
-            namespace        = "SourceVariables"
-            output_artifacts = [
-                "SourceArtifact",
-            ]
-            owner            = "AWS"
-            provider         = "CodeCommit"
-            region           = "us-west-2"
-            run_order        = 1
-            version          = "1"
-        }
+    action {
+      category = "Build"
+      configuration = {
+        "ProjectName" = aws_codebuild_project.api.name
+      }
+      input_artifacts = [
+        "api-subtubes-prod-project",
+      ]
+      name = "BuildAction"
+      output_artifacts = [
+        "api-subtubes-prod-project-build",
+      ]
+      owner     = "AWS"
+      provider  = "CodeBuild"
+      run_order = 1
+      version   = "1"
     }
-    stage {
-        name = "Build"
-
-        action {
-            category         = "Build"
-            configuration    = {
-                "ProjectName" = "SimpleHttpCodeBuildV2"
-            }
-            input_artifacts  = [
-                "SourceArtifact",
-            ]
-            name             = "Build"
-            namespace        = "BuildVariables"
-            output_artifacts = [
-                "DefinitionArtifact",
-                "ImageArtifact",
-            ]
-            owner            = "AWS"
-            provider         = "CodeBuild"
-            region           = "us-west-2"
-            run_order        = 1
-            version          = "1"
-        }
-    }
-    stage {
-        name = "deploy"
-
-        action {
-            category         = "Deploy"
-            configuration    = {
-                "AppSpecTemplateArtifact"        = "DefinitionArtifact"
-                "AppSpecTemplatePath"            = "appspec.yml"
-                "ApplicationName"                = "AppECS-ec2-demo-simple-http-blue-green"
-                "DeploymentGroupName"            = "ec2-demo-simple-http-blue-green"
-                "Image1ArtifactName"             = "ImageArtifact"
-                "Image1ContainerName"            = "IMAGE1_NAME"
-                "TaskDefinitionTemplateArtifact" = "DefinitionArtifact"
-                "TaskDefinitionTemplatePath"     = "taskdef.json"
-            }
-            input_artifacts  = [
-                "DefinitionArtifact",
-                "ImageArtifact",
-            ]
-            name             = "deploy"
-            output_artifacts = []
-            owner            = "AWS"
-            provider         = "CodeDeployToECS"
-            region           = "us-west-2"
-            run_order        = 1
-            version          = "1"
-        }
-    }
-
+  }
 }
 
-#terraform import aws_codepipeline.api simple-http-blue-greeen
+
+resource "aws_iam_role" "code_pipeline" {
+  assume_role_policy = jsonencode(
+    {
+      Statement = [
+        {
+          Action = "sts:AssumeRole"
+          Effect = "Allow"
+          Principal = {
+            Service = "codepipeline.amazonaws.com"
+          }
+        },
+      ]
+      Version = "2012-10-17"
+    }
+  )
+  force_detach_policies = false
+  managed_policy_arns   = []
+  max_session_duration  = 3600
+  name                  = "api-subtubes-pipeline"
+  path                  = "/"
+  tags = {
+    "STAGE" = "prod"
+  }
+  tags_all = {
+    "STAGE" = "prod"
+  }
+
+  inline_policy {
+    name = "codestar"
+    policy = jsonencode(
+      {
+        Statement = [
+          {
+            Action = [
+              "codestar-connections:UseConnection",
+            ]
+            Effect   = "Allow"
+            Resource = aws_codestarconnections_connection.api.arn
+          },
+          {
+            Action = [
+              "codebuild:BatchGetBuilds",
+              "codebuild:StartBuild",
+            ]
+            Effect   = "Allow"
+            Resource = "*"
+          },
+        ]
+        Version = "2012-10-17"
+      }
+    )
+  }
+  inline_policy {
+    name = "root"
+    policy = jsonencode(
+      {
+        Statement = [
+          {
+            Action = [
+              "s3:GetObject",
+              "s3:GetObjectVersion",
+              "s3:GetBucketVersioning",
+              "s3:PutObject",
+            ]
+            Effect = "Allow"
+            Resource = [
+              aws_s3_bucket.artifacts.arn,
+              "${aws_s3_bucket.artifacts.arn}/*",
+            ]
+          },
+          {
+            Action = [
+              "codebuild:BatchGetBuilds",
+              "codebuild:StartBuild",
+            ]
+            Effect   = "Allow"
+            Resource = "*"
+          },
+        ]
+        Version = "2012-10-17"
+      }
+    )
+  }
+}
+
