@@ -11,20 +11,22 @@ module "subnet_addrs" {
   ]
 }
 
-resource "aws_vpc" "data" {
+resource "aws_vpc" "main" {
   cidr_block       = var.main_vpc_cidr
   instance_tenancy = "default"
   enable_dns_hostnames = true
   enable_dns_support  = true
 }
+
+
 resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.data.id
+  vpc_id = aws_vpc.main.id
 }
 
 resource "aws_subnet" "public_subnets" {
 
   for_each = module.subnet_addrs.network_cidr_blocks
-  vpc_id = aws_vpc.data.id
+  vpc_id = aws_vpc.main.id
   availability_zone = each.key
   cidr_block        = each.value
   tags = {
@@ -35,7 +37,7 @@ resource "aws_subnet" "public_subnets" {
 
 
 resource "aws_route_table" "public_rt" {
-  vpc_id = aws_vpc.data.id
+  vpc_id = aws_vpc.main.id
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id

@@ -1,16 +1,8 @@
-# // deprecated
-# output "dev_main_vpc" {
-#   value = aws_vpc.Main.id
-# }
+output "prod_main_vpc_id" {
+  value = aws_vpc.main.id
+}
 
-# output "dev_main_vpc_id" {
-#   value = aws_vpc.Main.id
-# }
+output "prod_main_public_subnets_ids" {
+  value = values(aws_subnet.public_subnets)[*].id
+}
 
-# output "dev_main_public_subnets_ids" {
-#   value = [aws_subnet.publicsubnets.id]
-# }
-
-# output "dev_main_private_subnet_ids" {
-#   value = [aws_subnet.privatesubnets.id]
-# }
