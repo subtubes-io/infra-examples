@@ -10,7 +10,7 @@ resource "aws_lb" "subtubes_prod" {
   name                       = "api-subtubes-loadbalancer"
   preserve_host_header       = false
   security_groups = [
-    "sg-06e160a2311509528",
+   aws_security_group.api_subtubes_lb.id
   ]
 
   subnets  = data.terraform_remote_state.vpc.outputs.prod_main_public_subnets_ids
