@@ -63,9 +63,7 @@ resource "aws_security_group_rule" "service_ingress" {
   to_port           = 6060
   type              = "ingress"
   security_group_id = aws_security_group.prod_api_subtubes_service.id
-  cidr_blocks = [
-    "0.0.0.0/0",
-  ]
+  source_security_group_id = aws_security_group.prod_api_subtubes_lb.id
 
   timeouts {}
 }
