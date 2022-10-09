@@ -29,13 +29,13 @@ resource "aws_ecs_service" "api_subtubes" {
   load_balancer {
     container_name   = "api-subtubes"
     container_port   = 6060
-    target_group_arn = "arn:aws:elasticloadbalancing:us-west-2:568949616117:targetgroup/api-subtubes/4bc16afc58d79a60"
+    target_group_arn = aws_lb_target_group.api_subtubes.arn
   }
 
   network_configuration {
     assign_public_ip = true
     security_groups = [
-      "sg-03534b2bd1efbb691",
+      aws_security_group.prod_api_subtubes_service.id
     ]
     subnets = data.terraform_remote_state.vpc.outputs.prod_main_public_subnets_ids
   }
