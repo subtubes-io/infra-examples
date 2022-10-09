@@ -12,19 +12,18 @@ resource "aws_lb" "subtubes_prod" {
   security_groups = [
     "sg-06e160a2311509528",
   ]
-  subnets = [
-    "subnet-035d7bc44500bc0e9",
-    "subnet-0a30d5f28757aa769",
-  ]
+
+  subnets  = data.terraform_remote_state.vpc.outputs.prod_main_public_subnets_ids
   tags     = {}
   tags_all = {}
 
-  subnet_mapping {
-    subnet_id = "subnet-035d7bc44500bc0e9"
+  dynamic "subnet_mapping" {
+    for_each = data.terraform_remote_state.vpc.outputs.prod_main_public_subnets_ids
+    content {
+      subnet_id = subnet_mapping.value
+    }
   }
-  subnet_mapping {
-    subnet_id = "subnet-0a30d5f28757aa769"
-  }
+
 
   timeouts {}
 
