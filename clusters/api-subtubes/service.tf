@@ -37,10 +37,7 @@ resource "aws_ecs_service" "api_subtubes" {
     security_groups = [
       "sg-03534b2bd1efbb691",
     ]
-    subnets = [
-      "subnet-035d7bc44500bc0e9",
-      "subnet-0a30d5f28757aa769",
-    ]
+    subnets = data.terraform_remote_state.vpc.outputs.prod_main_public_subnets_ids
   }
 
   timeouts {}
