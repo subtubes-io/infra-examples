@@ -33,20 +33,26 @@ resource "aws_codebuild_project" "webapp" {
       type  = "PLAINTEXT"
       value = "subtubes-dev.auth0.com"
     }
+    # environment_variable {
+    #   name  = "REACT_APP_AUTH0_CLIENT_ID"
+    #   type  = "SECRETS_MANAGER"
+    #   value = "prod/webapp-subtubes-io/REACT_APP_AUTH0_CLIENT_ID"
+    # }
+
     environment_variable {
       name  = "REACT_APP_AUTH0_CLIENT_ID"
-      type  = "SECRETS_MANAGER"
-      value = "prod/webapp-subtubes-io/REACT_APP_AUTH0_CLIENT_ID"
+      type  = "PLAINTEXT"
+      value = "fxoHKeCsOJ5IHPC4IJr7Mm9giazzozis"
     }
     environment_variable {
       name  = "REACT_APP_AUTH0_CALLBACK_URL"
       type  = "PLAINTEXT"
-      value = "http://localhost:4040/callback"
+      value = "https://beta.subtubes.io/callback"
     }
     environment_variable {
       name  = "REACT_APP_API_SERVER_URL"
       type  = "PLAINTEXT"
-      value = "http://localhost:6060"
+      value = "https://api.subtubes.io"
     }
     environment_variable {
       name  = "REACT_APP_AUTH0_AUDIENCE"

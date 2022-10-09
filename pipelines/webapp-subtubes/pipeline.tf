@@ -26,7 +26,7 @@ resource "aws_codepipeline" "webapp" {
       configuration = {
         ConnectionArn    = aws_codestarconnections_connection.webapp.arn
         FullRepositoryId = "subtubes-io/subtubes-frontend"
-        BranchName       = "master"
+        BranchName       = "beta"
       }
       input_artifacts = []
 
