@@ -3,8 +3,8 @@ resource "aws_lb_target_group" "api_subtubes" {
   vpc_id                        = data.terraform_remote_state.vpc.outputs.prod_main_vpc_id
   deregistration_delay          = "300"
   load_balancing_algorithm_type = "round_robin"
-  port                          = 80
-  protocol                      = "HTTP"
+  port                          = 443
+  protocol                      = "HTTPS"
   protocol_version              = "HTTP1"
   slow_start                    = 0
   tags                          = {}

@@ -31,6 +31,20 @@ resource "aws_security_group_rule" "lb_ingress_http" {
 }
 
 
+resource "aws_security_group_rule" "lb_ingress_https" {
+  type = "ingress"
+  cidr_blocks = [
+    "0.0.0.0/0",
+  ]
+  description       = ""
+  from_port         = 443
+  protocol          = "tcp"
+  to_port           = 443
+  security_group_id = aws_security_group.prod_api_subtubes_lb.id
+}
+
+
+
 
 
 
