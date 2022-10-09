@@ -14,8 +14,8 @@ resource "aws_lb_target_group" "api_subtubes" {
 
   health_check {
     enabled             = true
-    healthy_threshold   = 5
-    interval            = 30
+    healthy_threshold   = 2
+    interval            = 20
     matcher             = "200"
     path                = "/api/messages/public"
     port                = "traffic-port"
