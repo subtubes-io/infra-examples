@@ -56,7 +56,6 @@ resource "aws_cloudfront_distribution" "cdn_bucket" {
     response_page_path    = "/index.html"
   }
 
-
   restrictions {
     geo_restriction {
       restriction_type = "none"
@@ -122,6 +121,22 @@ resource "aws_cloudfront_distribution" "cdn_bucket" {
   default_root_object = "index.html"
   http_version        = "http2"
   is_ipv6_enabled     = true
+
+  custom_error_response {
+    error_caching_min_ttl = 300
+    error_code            = 404
+    response_code         = 200
+    response_page_path    = "/index.html"
+  }
+
+
+  custom_error_response {
+    error_caching_min_ttl = 10
+    error_code            = 403
+    response_code         = 200
+    response_page_path    = "/index.html"
+  }
+
 }
 
 resource "aws_cloudfront_origin_access_control" "cdn_bucket" {
