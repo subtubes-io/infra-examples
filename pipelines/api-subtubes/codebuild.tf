@@ -61,9 +61,11 @@ resource "aws_codebuild_project" "api" {
               post_build:
                 commands:
                   - echo Build completed on `date`
+                  - echo Pushing the docker image ...
                   - docker push $REPOSITORY_URI:$IMAGE_TAG
                   - docker push $REPOSITORY_URI:latest
-                  - printf '[ { "name":"subtubes-api","imageUri":"%s "}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+                  - printf $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+                  - printf '[ { "name":"api-subtubes","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
                   - cat imagedefinitions.json
             artifacts:
               files:

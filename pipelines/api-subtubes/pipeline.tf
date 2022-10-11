@@ -65,6 +65,30 @@ resource "aws_codepipeline" "api" {
       version   = "1"
     }
   }
+
+
+
+  stage {
+    name = "Deploy"
+    action {
+      category = "Deploy"
+      configuration = {
+        "ClusterName" = "subtubes-prod"
+        "FileName"    = "imagedefinitions.json"
+        "ServiceName" = "api-subtubes"
+      }
+      input_artifacts = [
+        "api-subtubes-prod-project-build",
+      ]
+      name             = "ECSDeployment"
+      output_artifacts = []
+      owner            = "AWS"
+      provider         = "ECS"
+      region           = "us-west-2"
+      run_order        = 1
+      version          = "1"
+    }
+  }
 }
 
 
@@ -84,10 +108,12 @@ resource "aws_iam_role" "code_pipeline" {
     }
   )
   force_detach_policies = false
-  managed_policy_arns   = []
-  max_session_duration  = 3600
-  name                  = "api-subtubes-pipeline"
-  path                  = "/"
+  managed_policy_arns = [
+    "arn:aws:iam::aws:policy/AWSCodeDeployRoleForECS",
+  ]
+  max_session_duration = 3600
+  name                 = "api-subtubes-pipeline"
+  path                 = "/"
   tags = {
     "STAGE" = "prod"
   }
@@ -103,6 +129,13 @@ resource "aws_iam_role" "code_pipeline" {
           {
             Action = [
               "codestar-connections:UseConnection",
+            ]
+            Effect   = "Allow"
+            Resource = aws_codestarconnections_connection.api.arn
+          },
+          {
+            Action = [
+              "codestar-connections:*",
             ]
             Effect   = "Allow"
             Resource = aws_codestarconnections_connection.api.arn
@@ -125,6 +158,15 @@ resource "aws_iam_role" "code_pipeline" {
     policy = jsonencode(
       {
         Statement = [
+          {
+            Action = [
+              "ecs:*",
+            ]
+            Effect = "Allow"
+            Resource = [
+              "*",
+            ]
+          },
           {
             Action = [
               "s3:GetObject",

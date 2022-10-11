@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "api_subtubes" {
-    image_tag_mutability = "IMMUTABLE"
+    image_tag_mutability = "MUTABLE" #"IMMUTABLE"
     name                 = "subtubes-api"
     tags                 = {}
     tags_all             = {}
