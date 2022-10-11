@@ -83,7 +83,8 @@ resource "aws_codebuild_project" "webapp" {
                   - echo List active directory...
                   - ls
                   - echo Build started on `date`
-                  - npm run build
+                  - echo STATIC_FOLDER_NAME=$CODEBUILD_BUILD_NUMBER
+                  - STATIC_FOLDER_NAME=$CODEBUILD_BUILD_NUMBER npm run build 
               post_build:
                 commands:
                   # copy the contents of /build to S3
