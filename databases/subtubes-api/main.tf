@@ -1,6 +1,3 @@
-# terraform import aws_db_instance.subtubes_api_prod subtubes-api-prod
-# terraform state show aws_db_instance.subtubes_api_prod 
-
 resource "aws_db_instance" "subtubes_api_prod" {
   allocated_storage          = 400
   auto_minor_version_upgrade = true
@@ -11,9 +8,9 @@ resource "aws_db_instance" "subtubes_api_prod" {
   copy_tags_to_snapshot      = true
   customer_owned_ip_enabled  = false
   db_name                    = "subtubes_api"
-  db_subnet_group_name       = "default-vpc-0ce5095cbee1e5862"
+  db_subnet_group_name       = aws_db_subnet_group.subtubes_api_prod.name
   delete_automated_backups   = true
-  deletion_protection        = true
+  deletion_protection        = false
   enabled_cloudwatch_logs_exports = [
     "postgresql",
     "upgrade",
@@ -47,27 +44,21 @@ resource "aws_db_instance" "subtubes_api_prod" {
   vpc_security_group_ids = [
     aws_security_group.subtubes_api_prod.id
   ]
-  # lifecycle {
-  #   ignore_changes = [latest_restorable_time]
-  # }
   timeouts {}
+
 }
 
-# terraform import aws_security_group.subtubes_api_prod sg-0bbbd41d2a9825679
-# terraform state show aws_security_group.subtubes_api_prod
 resource "aws_security_group" "subtubes_api_prod" {
 
-  description = "Created by RDS management console"
-  name        = "subtubes-api-rds"
-  tags        = {}
-  tags_all    = {}
-  vpc_id      = data.terraform_remote_state.vpc.outputs.prod_main_vpc_id
+  name     = "subtubes-api-rds"
+  tags     = {}
+  tags_all = {}
+  vpc_id   = data.terraform_remote_state.vpc.outputs.prod_main_vpc_id
 
   timeouts {}
 
 }
 
-# terraform import aws_security_group_rule.base_egress sg-0bbbd41d2a9825679_egress_all_0_0_0.0.0.0/0
 resource "aws_security_group_rule" "base_egress" {
   cidr_blocks = [
     "0.0.0.0/0",
@@ -82,8 +73,6 @@ resource "aws_security_group_rule" "base_egress" {
 
 }
 
-
-# terraform import aws_security_group_rule.base_ingress sg-0bbbd41d2a9825679_ingress_tcp_5432_5432_67.161.63.179/32
 resource "aws_security_group_rule" "base_ingress" {
   cidr_blocks = [
     "67.161.63.179/32",
@@ -95,4 +84,12 @@ resource "aws_security_group_rule" "base_ingress" {
   type              = "ingress"
 
   timeouts {}
+}
+
+resource "aws_db_subnet_group" "subtubes_api_prod" {
+  #description = "Created from the RDS Management Console"
+  name       = "subtubes-api-prod"
+  subnet_ids = data.terraform_remote_state.vpc.outputs.prod_main_private_subnets_ids
+  tags       = {}
+  tags_all   = {}
 }
