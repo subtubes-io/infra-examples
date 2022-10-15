@@ -1,7 +1,11 @@
+
+data "aws_ssm_parameter" "subtubes_api_prod_rds_password" {
+  name            = "prod.subtubes_api.rds.password"
+  with_decryption = true
+}
 resource "aws_db_instance" "subtubes_api_prod" {
   allocated_storage          = 400
   auto_minor_version_upgrade = true
-  availability_zone          = "us-west-2b"
   backup_retention_period    = 7
   backup_window              = "12:05-12:35"
   ca_cert_identifier         = "rds-ca-2019"
@@ -26,9 +30,11 @@ resource "aws_db_instance" "subtubes_api_prod" {
   maintenance_window                    = "sun:00:00-sun:00:30"
   max_allocated_storage                 = 1000
   monitoring_interval                   = 60
+  monitoring_role_arn                   = aws_iam_role.rds_monitoring_role.arn
   multi_az                              = true
   network_type                          = "IPV4"
   option_group_name                     = "default:postgres-13"
+  password                              = data.aws_ssm_parameter.subtubes_api_prod_rds_password.value
   parameter_group_name                  = "default.postgres13"
   performance_insights_enabled          = true
   performance_insights_kms_key_id       = "arn:aws:kms:us-west-2:568949616117:key/03fe28d6-d3de-4646-8385-fafa17830fc4"
@@ -92,4 +98,34 @@ resource "aws_db_subnet_group" "subtubes_api_prod" {
   subnet_ids = data.terraform_remote_state.vpc.outputs.prod_main_private_subnets_ids
   tags       = {}
   tags_all   = {}
+}
+
+
+
+resource "aws_iam_role" "rds_monitoring_role" {
+
+  assume_role_policy = jsonencode(
+    {
+      Statement = [
+        {
+          Action = "sts:AssumeRole"
+          Effect = "Allow"
+          Principal = {
+            Service = "monitoring.rds.amazonaws.com"
+          }
+          Sid = ""
+        },
+      ]
+      Version = "2012-10-17"
+    }
+  )
+  force_detach_policies = false
+  managed_policy_arns = [
+    "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole",
+  ]
+  max_session_duration = 3600
+  name                 = "rds-monitoring-role"
+  path                 = "/"
+  tags                 = {}
+  tags_all             = {}
 }
