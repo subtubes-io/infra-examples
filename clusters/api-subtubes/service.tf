@@ -7,7 +7,7 @@ resource "aws_ecs_service" "api_subtubes" {
   enable_ecs_managed_tags            = true
   enable_execute_command             = false
   health_check_grace_period_seconds  = 0
-  iam_role                           = "aws-service-role"
+  #iam_role                           = "aws-service-role"
   launch_type                        = "FARGATE"
   name                               = "api-subtubes"
   platform_version                   = "LATEST"

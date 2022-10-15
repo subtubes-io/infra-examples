@@ -18,12 +18,12 @@ resource "aws_lb" "subtubes_prod" {
   tags     = {}
   tags_all = {}
 
-  dynamic "subnet_mapping" {
-    for_each = data.terraform_remote_state.vpc.outputs.prod_main_public_subnets_ids
-    content {
-      subnet_id = subnet_mapping.value
-    }
-  }
+  # dynamic "subnet_mapping" {
+  #   for_each = data.terraform_remote_state.vpc.outputs.prod_main_public_subnets_ids
+  #   content {
+  #     subnet_id = subnet_mapping.value
+  #   }
+  # }
 
 
   timeouts {}

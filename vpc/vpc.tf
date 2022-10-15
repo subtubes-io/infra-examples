@@ -1,21 +1,19 @@
-module "subnet_addrs" {
+module "subnet_addrs_public" {
   source  = "hashicorp/subnets/cidr"
   version = "1.0.0"
 
-  base_cidr_block = var.main_vpc_cidr
+  base_cidr_block = var.public_subnets
   networks = [
     { name = "us-west-2a", new_bits = 3 },
     { name = "us-west-2b", new_bits = 3 },
-    # { name = "us-west-2c", new_bits = 3 },
-    # { name = "us-west-2d", new_bits = 3 },
   ]
 }
 
 resource "aws_vpc" "main" {
-  cidr_block       = var.main_vpc_cidr
-  instance_tenancy = "default"
+  cidr_block           = var.main_vpc_cidr
+  instance_tenancy     = "default"
   enable_dns_hostnames = true
-  enable_dns_support  = true
+  enable_dns_support   = true
 }
 
 
@@ -25,8 +23,8 @@ resource "aws_internet_gateway" "igw" {
 
 resource "aws_subnet" "public_subnets" {
 
-  for_each = module.subnet_addrs.network_cidr_blocks
-  vpc_id = aws_vpc.main.id
+  for_each          = module.subnet_addrs_public.network_cidr_blocks
+  vpc_id            = aws_vpc.main.id
   availability_zone = each.key
   cidr_block        = each.value
   tags = {
@@ -46,7 +44,7 @@ resource "aws_route_table" "public_rt" {
 
 
 resource "aws_route_table_association" "public_rtassociation" {
-  for_each = module.subnet_addrs.network_cidr_blocks
+  for_each       = module.subnet_addrs_public.network_cidr_blocks
   subnet_id      = aws_subnet.public_subnets[each.key].id
   route_table_id = aws_route_table.public_rt.id
 }
