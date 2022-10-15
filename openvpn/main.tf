@@ -65,3 +65,17 @@ resource "aws_instance" "openvpn" {
     managedby = "manual"
   }
 }
+
+resource "aws_security_group_rule" "base_egress" {
+  cidr_blocks = [
+    "0.0.0.0/0",
+  ]
+  from_port         = 0
+  protocol          = "-1"
+   security_group_id = aws_security_group.openvpn.id
+  to_port           = 0
+  type              = "egress"
+
+  timeouts {}
+
+}
