@@ -1,1 +1,1 @@
-enable_public_acess = 1
+enable_public_acess = 0
