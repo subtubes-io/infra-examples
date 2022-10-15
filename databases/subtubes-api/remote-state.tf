@@ -1,8 +1,8 @@
 data "terraform_remote_state" "vpc" {
   backend = "s3"
   config = {
-    bucket  = "subtubes-rezflow-tf-state"
-    key     = "development/vpc/terraform.tfstate"
+    bucket  = "subtubes-io-tf-state"
+    key     = "prod/vpc/terraform.tfstate"
     encrypt = "true"
     region  = "us-west-2"
   }

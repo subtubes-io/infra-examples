@@ -3,7 +3,7 @@ terraform {
 
   backend "s3" {
     bucket         = "subtubes-io-tf-state"
-    key            = "clusters/prod/api-subtubes/terraform.tfstate"
+    key            = "rds/prod/api-subtubes/terraform.tfstate"
     encrypt        = "true"
     region         = "us-west-2"
     dynamodb_table = "TerraformStateLock"
