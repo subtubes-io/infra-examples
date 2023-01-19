@@ -8,7 +8,7 @@ resource "aws_iam_role" "slackbot" {
           Action = "sts:AssumeRole"
           Effect = "Allow"
           Principal = {
-            Service = "aws-lambda.amazonaws.com"
+            Service = "lambda.amazonaws.com"
           }
           Sid = ""
         },
