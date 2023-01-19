@@ -40,14 +40,14 @@ resource "aws_iam_role_policy" "slackbot" {
           "logs:PutLogEvents"
         ]
         Effect   = "Allow"
-        Resource = "arn:aws:logs:us-west-2:568949616117:log-group:/aws/lambda/slackbot:*"
+        Resource = "arn:aws:logs:us-west-2:568949616117:log-group:/aws/lambda/slackbot-secops:*"
       },
       {
         Action = [
           "Dynamodb:*"
         ]
         Effect   = "Allow"
-        Resource = "arn:aws:logs:us-west-2:568949616117:log-group:/aws/lambda/slackbot:*"
+        Resource = "arn:aws:dynamodb:us-west-2:568949616117:table/slackbot"
       },
     ]
   })
