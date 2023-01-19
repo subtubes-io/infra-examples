@@ -47,7 +47,6 @@ resource "aws_apigatewayv2_route" "slackbot_secops" {
 resource "aws_apigatewayv2_stage" "slackbot_secops" {
   api_id = aws_apigatewayv2_api.slackbot_secops.id
   auto_deploy     = true
-  deployment_id   = "ym0rpy"
   name            = "production"
   stage_variables = {}
   tags            = {}
