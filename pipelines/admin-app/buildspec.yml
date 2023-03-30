@@ -16,8 +16,8 @@ phases:
       - STATIC_FOLDER_NAME=$CODEBUILD_BUILD_NUMBER npm run build
   post_build:
     commands:
-      - aws s3 cp --recursive  ./build s3://${bucket_name}/
-      - aws s3 cp  --cache-control="max-age=0, no-cache, no-store, must-revalidate"  ./build/index.html s3://${bucket_name}/
+      - aws s3 cp --recursive  ./dist s3://${bucket_name}/
+      - aws s3 cp  --cache-control="max-age=0, no-cache, no-store, must-revalidate"  ./dist/index.html s3://${bucket_name}/
 artifacts:
   files:
     - "**/*"
