@@ -69,7 +69,7 @@ resource "aws_codebuild_project" "app" {
 
   source {
     buildspec = templatefile("./buildspec.yml", {
-      bucket_name = "admin-app-pipeline-artifacts", 
+      bucket_name = "subtubes-io-admin-app", 
     })
     git_clone_depth     = 0
     insecure_ssl        = false
@@ -149,8 +149,8 @@ resource "aws_iam_role" "code_build" {
             ]
             Effect = "Allow"
             Resource = [
-              "arn:aws:s3:::subtubes-io-webapp",
-              "arn:aws:s3:::subtubes-io-webapp/*",
+              "arn:aws:s3:::subtubes-io-admin-app",
+              "arn:aws:s3:::subtubes-io-admin-app/*",
             ]
           },
           {
