@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 terraform {
-  required_version = "~> 1.1.0"
+  required_version = "~> 1.4.5"
 
   backend "s3" {
     bucket         = "subtubes-io-tf-state"
