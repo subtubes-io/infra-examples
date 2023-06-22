@@ -1,0 +1,23 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - echo Change directory...
+      - echo List directory files...
+      - ls
+      - echo Installing source NPM dependencies...
+      - yarn install
+  build:
+    commands:
+      - echo List active directory...
+      - ls
+      - echo Build started on `date`
+      - echo STATIC_FOLDER_NAME=$CODEBUILD_BUILD_NUMBER
+      - STATIC_FOLDER_NAME=$CODEBUILD_BUILD_NUMBER yarn run build
+  post_build:
+    commands:
+      - aws s3 cp --recursive  ./dist s3://${bucket_name}/
+      - aws s3 cp  --cache-control="max-age=0, no-cache, no-store, must-revalidate"  ./dist/index.html s3://${bucket_name}/
+artifacts:
+  files:
+    - "**/*"
