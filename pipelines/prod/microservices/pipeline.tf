@@ -25,7 +25,7 @@ resource "aws_codepipeline" "api" {
     action {
       configuration = {
         ConnectionArn    = aws_codestarconnections_connection.api.arn
-        FullRepositoryId = "subtubes-io/subtubes-backend"
+        FullRepositoryId = "subtubes-io/microservices"
         BranchName       = "master"
       }
       input_artifacts = []
