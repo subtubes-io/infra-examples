@@ -1,8 +1,9 @@
 provider "aws" {
   region = "us-west-2"
-  # profile = "subtubes-io"
-  # shared_credentials_files = ["~/.aws/credentials"]
+  shared_credentials_files = ["/Users/edgarmartinez/.aws/credentials"]
+  profile = "default"
 }
+
 
 terraform {
   required_version = "~> 1.4.5"
