@@ -34,43 +34,11 @@ resource "aws_codebuild_project" "api" {
   }
 
   source {
-    buildspec           = <<-EOT
-            version: 0.2
-            phases:
-              pre_build:
-                commands:
-                  - echo Logging in to Amazon ECR...
-                  - aws --version
-                  - echo $AWS_DEFAULT_REGION
-                  - aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 568949616117.dkr.ecr.us-west-2.amazonaws.com
-                  - IMAGE_REPO_NAME=subtubes-api
-                  - REPOSITORY_URI=568949616117.dkr.ecr.us-west-2.amazonaws.com/$IMAGE_REPO_NAME
-                  - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-                  - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F ":" '{print $2}')
-                  - echo List directory files...
-                  - ls
-                  - echo Installing source NPM dependencies...
-                  - npm install
-              build:
-                commands:
-                  - echo Build started on `date`
-                  - echo Building the Docker image...
-                  - echo Building $REPOSITORY_URI:$IMAGE_TAG 
-                  - docker build -t $REPOSITORY_URI:latest .
-                  - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
-              post_build:
-                commands:
-                  - echo Build completed on `date`
-                  - echo Pushing the docker image ...
-                  - docker push $REPOSITORY_URI:$IMAGE_TAG
-                  - docker push $REPOSITORY_URI:latest
-                  - printf $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
-                  - printf '[ { "name":"subtubes-microservices","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
-                  - cat imagedefinitions.json
-            artifacts:
-              files:
-                - imagedefinitions.json
-        EOT
+    buildspec = templatefile("./buildspec.yaml", {
+      image_name_fetch = "fetch",
+      image_name_gateway = "gateway",
+      image_name_sse = "sse",
+    })
     git_clone_depth     = 0
     insecure_ssl        = false
     report_build_status = false

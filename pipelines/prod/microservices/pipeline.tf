@@ -68,27 +68,27 @@ resource "aws_codepipeline" "api" {
 
 
 
-  stage {
-    name = "Deploy"
-    action {
-      category = "Deploy"
-      configuration = {
-        "ClusterName" = "subtubes-prod"
-        "FileName"    = "imagedefinitions.json"
-        "ServiceName" = "subtubes-microservices"
-      }
-      input_artifacts = [
-        "subtubes-microservices-prod-project-build",
-      ]
-      name             = "ECSDeployment"
-      output_artifacts = []
-      owner            = "AWS"
-      provider         = "ECS"
-      region           = "us-west-2"
-      run_order        = 1
-      version          = "1"
-    }
-  }
+  # stage {
+  #   name = "Deploy"
+  #   action {
+  #     category = "Deploy"
+  #     configuration = {
+  #       "ClusterName" = "subtubes-prod"
+  #       "FileName"    = "imagedefinitions.json"
+  #       "ServiceName" = "subtubes-microservices"
+  #     }
+  #     input_artifacts = [
+  #       "subtubes-microservices-prod-project-build",
+  #     ]
+  #     name             = "ECSDeployment"
+  #     output_artifacts = []
+  #     owner            = "AWS"
+  #     provider         = "ECS"
+  #     region           = "us-west-2"
+  #     run_order        = 1
+  #     version          = "1"
+  #   }
+  # }
 }
 
 

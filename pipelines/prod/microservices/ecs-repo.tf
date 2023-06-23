@@ -1,6 +1,6 @@
 resource "aws_ecr_repository" "gateway" {
     image_tag_mutability = "MUTABLE" #"IMMUTABLE"
-    name                 = "subtubes-api"
+    name                 = "gateway"
     tags                 = {}
     tags_all             = {}
 
@@ -19,7 +19,7 @@ resource "aws_ecr_repository" "gateway" {
 
 resource "aws_ecr_repository" "fetch" {
     image_tag_mutability = "MUTABLE" #"IMMUTABLE"
-    name                 = "subtubes-api"
+    name                 = "fetch"
     tags                 = {}
     tags_all             = {}
 
@@ -36,7 +36,7 @@ resource "aws_ecr_repository" "fetch" {
 }
 resource "aws_ecr_repository" "sse" {
     image_tag_mutability = "MUTABLE" #"IMMUTABLE"
-    name                 = "subtubes-api"
+    name                 = "sse"
     tags                 = {}
     tags_all             = {}
 
