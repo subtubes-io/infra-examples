@@ -20,13 +20,13 @@ phases:
       - echo Build started on `date`
       - echo Building the Docker image...
       - echo Building $FETCH_REPOSITORY_URI:$IMAGE_TAG
-      - docker build -t $FETCH_REPOSITORY_URI:latest .
+      - docker build -t $FETCH_REPOSITORY_URI:latest -f Dockerfile.fetch .
       - docker tag $FETCH_REPOSITORY_URI:latest $FETCH_REPOSITORY_URI:$IMAGE_TAG
       - echo Building $GATEWAY_REPOSITORY_URI:$IMAGE_TAG
-      - docker build -t $GATEWAY_REPOSITORY_URI:latest .
+      - docker build -t $GATEWAY_REPOSITORY_URI:latest  -f Dockerfile.gateway .
       - docker tag $GATEWAY_REPOSITORY_URI:latest $GATEWAY_REPOSITORY_URI:$IMAGE_TAG
       - echo Building $SSE_REPOSITORY_URI:$IMAGE_TAG
-      - docker build -t $SSE_REPOSITORY_URI:latest .
+      - docker build -t $SSE_REPOSITORY_URI:latest -f Dockerfile.sse .
       - docker tag $SSE_REPOSITORY_URI:latest $SSE_REPOSITORY_URI:$IMAGE_TAG
 
   post_build:
