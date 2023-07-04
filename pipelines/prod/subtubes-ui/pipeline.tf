@@ -25,7 +25,7 @@ resource "aws_codepipeline" "app" {
     action {
       configuration = {
         ConnectionArn    = aws_codestarconnections_connection.app.arn
-        FullRepositoryId = "socialstandards/ss-web-app"
+        FullRepositoryId = "subtubes-io/subtubes-ui"
         BranchName       = "main"
       }
       input_artifacts = []
