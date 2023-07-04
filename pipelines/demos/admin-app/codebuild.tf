@@ -47,7 +47,7 @@ resource "aws_codebuild_project" "app" {
     # environment_variable {
     #   name  = "REACT_APP_AUTH0_CALLBACK_URL"
     #   type  = "PLAINTEXT"
-    #   value = "https://beta.subtubes.io/callback"
+    #   value = "https://app.subtubes.io/callback"
     # }
     # environment_variable {
     #   name  = "REACT_APP_API_SERVER_URL"

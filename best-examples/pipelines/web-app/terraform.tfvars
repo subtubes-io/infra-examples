@@ -1,0 +1,5 @@
+pipeline_bucket_name = "ss-dev-pipeline-artifacts"
+app_name             = "ss-web-app"
+app_bucket_name      = "ss-web-app-v2"
+env                  = "dev"
+account_id           = "836484356139"

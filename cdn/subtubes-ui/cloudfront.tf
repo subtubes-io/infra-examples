@@ -5,7 +5,7 @@ resource "aws_cloudfront_distribution" "cdn_bucket" {
   ]
   enabled = true
   aliases = [
-    "beta.subtubes.io"
+    "app.subtubes.io"
   ]
   origin {
     domain_name         = aws_s3_bucket.cdn_bucket.bucket_regional_domain_name

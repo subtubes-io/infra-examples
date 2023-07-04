@@ -1,6 +1,6 @@
 resource "aws_acm_certificate" "cert" {
   provider = aws.virginia
-  domain_name = "beta.subtubes.io"
+  domain_name = "app.subtubes.io"
   validation_method = "DNS"
 
   //tags = local.global_tags

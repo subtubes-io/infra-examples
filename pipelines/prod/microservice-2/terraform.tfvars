@@ -1,5 +1,0 @@
-pipeline_bucket_name = "subtubes-microservices-artifacts"
-app_name             = "microservices"
-app_bucket_name      = "subtubes-microservices"
-env                  = "prod"
-account_id           = "568949616117"
