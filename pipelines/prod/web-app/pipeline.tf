@@ -1,18 +1,18 @@
 
-resource "aws_codestarconnections_connection" "webapp" {
-  name          = "webapp-subtubes"
+resource "aws_codestarconnections_connection" "app" {
+  name          = var.app_name
   provider_type = "GitHub"
 }
 
 
-resource "aws_codepipeline" "webapp" {
-  name     = "webapp-subtubes-pipeline"
+resource "aws_codepipeline" "app" {
+  name     = "${var.app_name}-pipeline"
   role_arn = aws_iam_role.code_pipeline.arn
   tags = {
-    "STAGE" = "prod"
+    "env" = var.env
   }
   tags_all = {
-    "STAGE" = "prod"
+    "env" = var.env
   }
 
   artifact_store {
@@ -24,8 +24,8 @@ resource "aws_codepipeline" "webapp" {
     name = "Source"
     action {
       configuration = {
-        ConnectionArn    = aws_codestarconnections_connection.webapp.arn
-        FullRepositoryId = "subtubes-io/subtubes-ui"
+        ConnectionArn    = aws_codestarconnections_connection.app.arn
+        FullRepositoryId = "socialstandards/ss-web-app"
         BranchName       = "main"
       }
       input_artifacts = []
@@ -44,13 +44,32 @@ resource "aws_codepipeline" "webapp" {
 
     }
   }
+
+
+  stage {
+    name = "Unitest"
+    action {
+      category = "Test"
+      configuration = {
+        "ProjectName" = "ss-web-app-unittest"
+      }
+      input_artifacts = [
+        "ReactServerless",
+      ]
+      run_order = 1
+      owner     = "AWS"
+      provider  = "CodeBuild"
+      version   = "1"
+      name      = "Unitest"
+    }
+  }
+
   stage {
     name = "Build"
-
     action {
       category = "Build"
       configuration = {
-        "ProjectName" = aws_codebuild_project.webapp.name
+        "ProjectName" = aws_codebuild_project.app.name
       }
       input_artifacts = [
         "ReactServerless",
@@ -61,7 +80,7 @@ resource "aws_codepipeline" "webapp" {
       ]
       owner     = "AWS"
       provider  = "CodeBuild"
-      run_order = 1
+      run_order = 2
       version   = "1"
     }
   }
@@ -86,13 +105,13 @@ resource "aws_iam_role" "code_pipeline" {
   force_detach_policies = false
   managed_policy_arns   = []
   max_session_duration  = 3600
-  name                  = "webapp-pipeline"
+  name                  = "${var.app_name}-pipeline"
   path                  = "/"
   tags = {
-    "STAGE" = "prod"
+    "env" = var.env
   }
   tags_all = {
-    "STAGE" = "prod"
+    "env" = var.env
   }
 
   inline_policy {
@@ -105,7 +124,7 @@ resource "aws_iam_role" "code_pipeline" {
               "codestar-connections:UseConnection",
             ]
             Effect   = "Allow"
-            Resource = aws_codestarconnections_connection.webapp.arn
+            Resource = aws_codestarconnections_connection.app.arn
           },
           {
             Action = [

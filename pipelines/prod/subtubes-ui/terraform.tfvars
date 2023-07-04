@@ -1,1 +1,0 @@
-pipeline_bucket_name = "subtubes-ui-pipeline-artifacts"
