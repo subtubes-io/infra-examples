@@ -88,7 +88,7 @@ resource "aws_codebuild_project" "app" {
     environment_variable {
       name  = "VITE_APP_AUTH0_CLIENT_ID"
       type  = "PLAINTEXT"
-      value = "Z9JklgbLuLuRadk2gi3T2wcFUF4engE6"
+      value = "dNeYCx4ynssF8QftjeXAXBSIuYBx1qc4"
     }
 
 
