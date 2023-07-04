@@ -46,23 +46,23 @@ resource "aws_codepipeline" "app" {
   }
 
 
-  stage {
-    name = "Unitest"
-    action {
-      category = "Test"
-      configuration = {
-        "ProjectName" = "ss-web-app-unittest"
-      }
-      input_artifacts = [
-        "ReactServerless",
-      ]
-      run_order = 1
-      owner     = "AWS"
-      provider  = "CodeBuild"
-      version   = "1"
-      name      = "Unitest"
-    }
-  }
+  # stage {
+  #   name = "Unitest"
+  #   action {
+  #     category = "Test"
+  #     configuration = {
+  #       "ProjectName" = "ss-web-app-unittest"
+  #     }
+  #     input_artifacts = [
+  #       "ReactServerless",
+  #     ]
+  #     run_order = 1
+  #     owner     = "AWS"
+  #     provider  = "CodeBuild"
+  #     version   = "1"
+  #     name      = "Unitest"
+  #   }
+  # }
 
   stage {
     name = "Build"

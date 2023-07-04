@@ -27,11 +27,78 @@ resource "aws_codebuild_project" "app" {
 
   environment {
 
-    # environment_variable {
-    #   name  = "REACT_APP_AUTH0_DOMAIN"
-    #   type  = "PLAINTEXT"
-    #   value = "subtubes-dev.auth0.com"
-    # }
+    environment_variable {
+      name  = "VITE_AUTH0_ONBOARD_AUDIENCE"
+      type  = "PLAINTEXT"
+      value = "prod.api.subtubes.io"
+    }
+
+
+    environment_variable {
+      name  = "VITE_APP_FULL_NAME"
+      type  = "PLAINTEXT"
+      value = "Subtubes"
+    }
+
+
+    environment_variable {
+      name  = "VITE_AUTH0_VERIFY_URL"
+      type  = "PLAINTEXT"
+      value = "https://app.subtubes.io"
+    }
+
+    environment_variable {
+      name  = "VITE_APP_DEMO"
+      type  = "PLAINTEXT"
+      value = "Subtubes"
+    }
+
+
+
+    environment_variable {
+      name  = "VITE_ONBOARD_API_URL"
+      type  = "PLAINTEXT"
+      value = "https://api.subtubes.io"
+    }
+
+
+
+
+    environment_variable {
+      name  = "VITE_APP_AUTH0_DOMAIN"
+      type  = "PLAINTEXT"
+      value = "dev-dt8t2igsll5gneka.us.auth0.com"
+    }
+
+
+    environment_variable {
+      name  = "VITE_APP_NAME"
+      type  = "PLAINTEXT"
+      value = "Subtubes"
+    }
+
+
+    environment_variable {
+      name  = "VITE_APP_VERSION"
+      type  = "PLAINTEXT"
+      value = "0.0.1"
+    }
+
+
+    environment_variable {
+      name  = "VITE_APP_AUTH0_CLIENT_ID"
+      type  = "PLAINTEXT"
+      value = "Z9JklgbLuLuRadk2gi3T2wcFUF4engE6"
+    }
+
+
+    environment_variable {
+      name  = "VITE_SSE_API_URL"
+      type  = "PLAINTEXT"
+          value = "https://sse.subtubes.io"
+    }
+
+
 
     compute_type                = "BUILD_GENERAL1_SMALL"
     image                       = "aws/codebuild/standard:6.0"
